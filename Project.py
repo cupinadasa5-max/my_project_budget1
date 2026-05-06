@@ -10,7 +10,7 @@ class BudgetApp:
         self.root.geometry("900x600")
         self.root.resizable(True, True)
         
-        # Настройка минимального размера окна (NFR3)
+        # Настройка минимального размера окна
         self.root.minsize(800, 600)
         
         # Создание базы данных
@@ -26,7 +26,7 @@ class BudgetApp:
         self.load_transactions()
     
     def init_database(self):
-        """Инициализация базы данных SQLite"""
+        #Инициализация базы данных SQLite
         self.conn = sqlite3.connect('budget.db')
         self.cursor = self.conn.cursor()
         
@@ -44,7 +44,7 @@ class BudgetApp:
         self.conn.commit()
     
     def get_current_balance(self):
-        """Расчёт текущего баланса из базы данных"""
+        #Расчёт текущего баланса из базы данных
         # Сумма всех доходов
         self.cursor.execute('SELECT SUM(amount) FROM transactions WHERE type = "Доход"')
         income_total = self.cursor.fetchone()[0] or 0
@@ -56,19 +56,19 @@ class BudgetApp:
         return income_total - expense_total
     
     def update_balance_display(self):
-        """Обновление отображения текущего баланса"""
+        #Обновление отображения текущего баланса
         self.balance_label.config(text=f"Текущий баланс: {self.current_balance:.2f} ₽")
         
-        # Визуальное выделение баланса (NFR3)
+        # Визуальное выделение баланса
         if self.current_balance >= 0:
             self.balance_frame.config(bg="#90EE90")  # Зелёный для положительного баланса
         else:
             self.balance_frame.config(bg="#FFB6C1")  # Красный для отрицательного
     
     def create_widgets(self):
-        """Создание всех элементов интерфейса"""
+        #Создание всех элементов интерфейса
         
-        # Верхняя панель с балансом (FR7)
+        # Верхняя панель с балансом
         self.balance_frame = Frame(self.root, bg="#90EE90", height=80)
         self.balance_frame.pack(fill=X, padx=10, pady=10)
         self.balance_frame.pack_propagate(False)
@@ -85,17 +85,17 @@ class BudgetApp:
         input_frame = LabelFrame(self.root, text="Добавить операцию", font=("Arial", 12, "bold"))
         input_frame.pack(fill=X, padx=10, pady=10)
         
-        # Поле для суммы (FR1)
+        # Поле для суммы
         Label(input_frame, text="Сумма:").grid(row=0, column=0, padx=10, pady=10, sticky=W)
         self.amount_entry = Entry(input_frame, width=20, font=("Arial", 11))
         self.amount_entry.grid(row=0, column=1, padx=10, pady=10)
         
-        # Поле для комментария (FR2)
+        # Поле для комментария
         Label(input_frame, text="Комментарий:").grid(row=0, column=2, padx=10, pady=10, sticky=W)
         self.comment_entry = Entry(input_frame, width=30, font=("Arial", 11))
         self.comment_entry.grid(row=0, column=3, padx=10, pady=10)
         
-        # Выбор категории (FR3)
+        # Выбор категории 
         Label(input_frame, text="Категория:").grid(row=1, column=0, padx=10, pady=10, sticky=W)
         self.categories = ["Еда", "Транспорт", "Одежда", "Накопления", "Зарплата", "Прочее"]
         self.category_var = StringVar(value=self.categories[0])
@@ -108,7 +108,7 @@ class BudgetApp:
         )
         self.category_menu.grid(row=1, column=1, padx=10, pady=10)
         
-        # Кнопки добавления (FR4)
+        # Кнопки добавления
         self.income_btn = Button(
             input_frame, 
             text="➕ Добавить доход", 
@@ -137,7 +137,7 @@ class BudgetApp:
         history_frame = LabelFrame(self.root, text="История операций", font=("Arial", 12, "bold"))
         history_frame.pack(fill=BOTH, expand=True, padx=10, pady=10)
         
-        # Таблица для отображения истории (FR8)
+        # Таблица для отображения истории
         columns = ("Тип", "Категория", "Сумма", "Комментарий", "Дата")
         self.tree = ttk.Treeview(history_frame, columns=columns, show="headings", height=15)
         
@@ -163,7 +163,7 @@ class BudgetApp:
         scrollbar.pack(side=RIGHT, fill=Y)
     
     def add_transaction(self, trans_type, category, amount, comment):
-        """Добавление транзакции в базу данных"""
+        #Добавление транзакции в базу данных
         if amount <= 0:
             messagebox.showerror("Ошибка", "Сумма должна быть положительным числом!")
             return False
@@ -179,7 +179,7 @@ class BudgetApp:
         return True
     
     def add_income(self):
-        """Обработчик добавления дохода (FR5)"""
+        #Обработчик добавления дохода (FR5)
         try:
             amount = float(self.amount_entry.get())
             if amount <= 0:
@@ -201,7 +201,7 @@ class BudgetApp:
                 self.amount_entry.delete(0, END)
                 self.comment_entry.delete(0, END)
                 
-                # Специальное сообщение (FR5)
+                # Специальное сообщение 
                 messagebox.showinfo("Успех", "Доход успешно добавлен!")
                 
         except ValueError as e:
@@ -210,7 +210,7 @@ class BudgetApp:
             messagebox.showerror("Ошибка", f"Пожалуйста, введите корректную сумму!\n{str(e)}")
     
     def add_expense(self):
-        """Обработчик добавления расхода (FR6)"""
+        #Обработчик добавления расхода
         try:
             amount = float(self.amount_entry.get())
             if amount <= 0:
@@ -235,11 +235,11 @@ class BudgetApp:
                 messagebox.showinfo("Успех", "Расход успешно добавлен!")
                 
         except ValueError as e:
-            # Обработка невалидных данных (NFR2)
+            # Обработка невалидных данных
             messagebox.showerror("Ошибка", f"Пожалуйста, введите корректную сумму!\n{str(e)}")
     
     def load_transactions(self):
-        """Загрузка и отображение истории операций из БД (FR9)"""
+        #Загрузка и отображение истории операций из БД 
         # Очистка таблицы
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -258,7 +258,7 @@ class BudgetApp:
             self.tree.insert("", END, values=(trans_type, category, formatted_amount, comment, date))
     
     def __del__(self):
-        """Закрытие соединения с БД при завершении"""
+        #Закрытие соединения с БД при завершении
         if hasattr(self, 'conn'):
             self.conn.close()
 
